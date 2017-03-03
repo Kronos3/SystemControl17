@@ -9,18 +9,19 @@
 volatile bool isReady = false;
 volatile bool isLoading = false;
 
-int globalSpeed = 64;
+int speedTop = 15;
+int speedBottom = 64;
 int globalWait = 5000; /* Time in msec */
 
 task checkReady () {
 	while (1) {
 		if (isReady) {
-			turnLedOn(green);
-			turnLedOff(red);
+			turnLEDOn(green);
+			turnLEDOff(red);
 		}
 		else {
-			turnLedOn(red);
-			turnLedOff(green);
+			turnLEDOn(red);
+			turnLEDOff(green);
 		}
 	}
 }
@@ -47,14 +48,15 @@ void load ()
 		return;
 	}
 	isLoading = true;
-	motor[motorTop] = globalSpeed;
-	while (isEmpty());
+	motor[motorTop] = speedTop;
+	while (!SensorValue(stationLimit));
 	motor[motorTop] = 0;
-	
+
 	sleep (globalWait);
-	
-	motor[motorBottom] = globalSpeed;
-	while (!isEmpty());
+
+	motor[motorBottom] = speedBottom;
+	while (SensorValue(stationLimit));
+	sleep (500);
 	motor[motorBottom] = 0;
 	isLoading = false;
 }
